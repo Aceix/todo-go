@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  # gofiber app service
+  app:
+    container_name: todo-app
+    build: .
+    ports: 
+      - 5000:3000
+    restart: on-failure
+    volumes: 
+      - api:/usr/src/app
+    depends_on: 
+      - mongodb
+    networks:
+      - default
+  
+  # mongodb service
+  mongodb:
+    image: mongo
+    container_name: mongodb-service
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes: 
+      - mongodb-volume:/data/db
+    networks: 
+      - default
+    ports: 
+      - 27017:27017
+
+  # mongodb web admin interface
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-service
+    restart: always
+    ports:
+      - 5001:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+    networks: 
+      - default
+  
+volumes:
+  api:
+  mongodb-volume:
+
+networks: 
+  default:
+    driver: bridge
